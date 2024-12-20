@@ -3,6 +3,7 @@ import Timer from '@/components/Timer';
 import WorkoutHistory from '@/components/WorkoutHistory';
 import ExerciseSelector from '@/components/ExerciseSelector';
 import WorkoutPlanner from '@/components/WorkoutPlanner';
+import BodyMetrics from '@/components/BodyMetrics';
 
 const Index = () => {
   const [selectedExerciseId, setSelectedExerciseId] = useState<number>();
@@ -22,6 +23,7 @@ const Index = () => {
               selectedId={selectedExerciseId}
             />
             <Timer onComplete={() => console.log('训练完成')} />
+            <BodyMetrics />
           </div>
           <div className="space-y-8">
             <WorkoutPlanner />
