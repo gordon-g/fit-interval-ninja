@@ -4,7 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { Play, Pause, RotateCcw } from "lucide-react";
+import { Play, Pause, RotateCcw, Bell, Vibrate, Music, Volume2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface TimerProps {
   onComplete?: () => void;
@@ -20,6 +21,33 @@ const Timer: React.FC<TimerProps> = ({ onComplete }) => {
   const [isActive, setIsActive] = useState(false);
   const { toast } = useToast();
 
+  // 提醒设置
+  const [useToastNotification, setUseToastNotification] = useState(true);
+  const [useVibration, setUseVibration] = useState(false);
+  const [useAlarm, setUseAlarm] = useState(false);
+  const [useMusic, setUseMusic] = useState(false);
+
+  const audio = new Audio('/alarm.mp3');
+
+  const notify = () => {
+    if (useToastNotification) {
+      toast({
+        title: isWorking ? "休息时间!" : "开始下一组!",
+        description: isWorking 
+          ? `第 ${currentRound} 组完成` 
+          : `准备开始第 ${currentRound + 1} 组`,
+      });
+    }
+
+    if (useVibration && navigator.vibrate) {
+      navigator.vibrate([200, 100, 200]);
+    }
+
+    if (useAlarm || useMusic) {
+      audio.play().catch(console.error);
+    }
+  };
+
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
 
@@ -28,19 +56,13 @@ const Timer: React.FC<TimerProps> = ({ onComplete }) => {
         setTimeLeft((time) => time - 1);
       }, 1000);
     } else if (timeLeft === 0) {
+      notify();
+      
       if (isWorking) {
-        toast({
-          title: "休息时间!",
-          description: `第 ${currentRound} 组完成`,
-        });
         setIsWorking(false);
         setTimeLeft(restTime);
       } else {
         if (currentRound < rounds) {
-          toast({
-            title: "开始下一组!",
-            description: `准备开始第 ${currentRound + 1} 组`,
-          });
           setCurrentRound((round) => round + 1);
           setIsWorking(true);
           setTimeLeft(workTime);
@@ -114,6 +136,56 @@ const Timer: React.FC<TimerProps> = ({ onComplete }) => {
             disabled={isActive}
             min={1}
           />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <Label>提醒方式</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="toast"
+              checked={useToastNotification}
+              onCheckedChange={(checked) => setUseToastNotification(checked as boolean)}
+            />
+            <Label htmlFor="toast" className="flex items-center space-x-2">
+              <Bell className="h-4 w-4" />
+              <span>消息提醒</span>
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="vibration"
+              checked={useVibration}
+              onCheckedChange={(checked) => setUseVibration(checked as boolean)}
+            />
+            <Label htmlFor="vibration" className="flex items-center space-x-2">
+              <Vibrate className="h-4 w-4" />
+              <span>振动</span>
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="alarm"
+              checked={useAlarm}
+              onCheckedChange={(checked) => setUseAlarm(checked as boolean)}
+            />
+            <Label htmlFor="alarm" className="flex items-center space-x-2">
+              <Volume2 className="h-4 w-4" />
+              <span>闹铃</span>
+            </Label>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="music"
+              checked={useMusic}
+              onCheckedChange={(checked) => setUseMusic(checked as boolean)}
+            />
+            <Label htmlFor="music" className="flex items-center space-x-2">
+              <Music className="h-4 w-4" />
+              <span>音乐</span>
+            </Label>
+          </div>
         </div>
       </div>
 
