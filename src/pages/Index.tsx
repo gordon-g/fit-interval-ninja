@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Timer from '@/components/Timer';
 import WorkoutHistory from '@/components/WorkoutHistory';
 import ExerciseSelector from '@/components/ExerciseSelector';
+import WorkoutPlanner from '@/components/WorkoutPlanner';
 
 const Index = () => {
   const [selectedExerciseId, setSelectedExerciseId] = useState<number>();
@@ -14,15 +15,16 @@ const Index = () => {
           <p className="text-gray-500">选择训练动作，设置时间，开始锻炼吧</p>
         </div>
         
-        <div className="grid gap-8 md:grid-cols-2">
-          <div className="space-y-8">
+        <div className="grid gap-8 md:grid-cols-3">
+          <div className="space-y-8 md:col-span-2">
             <ExerciseSelector
               onSelect={(exercise) => setSelectedExerciseId(exercise.id)}
               selectedId={selectedExerciseId}
             />
             <Timer onComplete={() => console.log('训练完成')} />
           </div>
-          <div className="flex justify-center">
+          <div className="space-y-8">
+            <WorkoutPlanner />
             <WorkoutHistory />
           </div>
         </div>
